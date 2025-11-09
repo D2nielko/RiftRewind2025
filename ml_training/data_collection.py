@@ -82,17 +82,10 @@ class RiotDataCollector:
             logger.error("Failed to fetch challenger players")
             return []
 
-        summoner_ids = [entry['summonerId'] for entry in data['entries'][:50]]  # Top 50
-        logger.info(f"Found {len(summoner_ids)} challenger players")
+        puuids = [entry['puuid'] for entry in data['entries'][:50]]  # Top 50
+        logger.info(f"Found {len(puuids)} challenger players")
 
         # Convert summoner IDs to PUUIDs
-        puuids = []
-        for summoner_id in summoner_ids:
-            url = f"https://{self.region}.api.riotgames.com/lol/summoner/v4/summoners/{summoner_id}"
-            summoner_data = self._make_request(url)
-            if summoner_data:
-                puuids.append(summoner_data['puuid'])
-
         logger.info(f"Collected {len(puuids)} PUUIDs")
         return puuids
 
