@@ -25,6 +25,13 @@ The system consists of 3 main components:
 ## Step 1: Data Collection
 
 ### Install Dependencies
+
+**Mac OSX users:** First install OpenMP runtime (required by XGBoost):
+```bash
+brew install libomp
+```
+
+**All users:** Install Python dependencies:
 ```bash
 cd ml_training
 pip install -r requirements.txt
@@ -230,6 +237,32 @@ The models use 35+ features from match data:
 ---
 
 ## Troubleshooting
+
+### XGBoost OpenMP Error on Mac OSX
+
+**Error:** `XGBoostError: XGBoost Library (libxgboost.dylib) could not be loaded... Library not loaded: @rpath/libomp.dylib`
+
+**Solution:** Install the OpenMP runtime library using Homebrew:
+
+```bash
+brew install libomp
+```
+
+After installation, the XGBoost library should load successfully. If you continue to see issues:
+
+1. Verify Homebrew is installed: `brew --version`
+2. Update Homebrew: `brew update`
+3. Reinstall libomp: `brew reinstall libomp`
+4. If using a virtual environment, try recreating it:
+   ```bash
+   deactivate  # if in venv
+   rm -rf .venv
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+**Note:** This issue is specific to Mac OSX and occurs because XGBoost requires the OpenMP library for parallel processing. Linux users should install `libgomp`, and Windows users should have `vcomp140.dll` or `libgomp-1.dll`.
 
 ### "No model available for role"
 - Ensure all 5 models are uploaded to S3
