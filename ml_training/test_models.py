@@ -10,6 +10,7 @@ Usage:
 import json
 import argparse
 import numpy as np
+import pandas as pd
 from performance_predictor import PerformancePredictor
 
 

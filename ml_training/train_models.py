@@ -297,8 +297,9 @@ def main():
     logger.info(f"Loading training data from {args.input}...")
     with open(args.input, 'r') as f:
         data = json.load(f)
-
+    print(data.keys())
     samples = data['samples']
+    num_matches = data['num_matches']
     logger.info(f"Loaded {len(samples)} training samples from {data['num_matches']} matches")
 
     # Prepare data
@@ -322,11 +323,12 @@ def main():
 
         all_metrics[role] = metrics
 
+
     # Create metadata
     metadata = {
         'training_date': pd.Timestamp.now().isoformat(),
         'num_samples': len(samples),
-        'num_matches': data['num_matches'],
+        'num_matches': num_matches,
         'roles': list(models.keys()),
         'feature_columns': FEATURE_COLUMNS,
         'metrics': all_metrics
