@@ -1,0 +1,796 @@
+{
+  "training_date": "2025-11-09T14:08:45.310233",
+  "num_samples": 2810,
+  "num_matches": 281,
+  "roles": [
+    "TOP",
+    "JUNGLE",
+    "MIDDLE",
+    "BOTTOM",
+    "UTILITY"
+  ],
+  "feature_columns": [
+    "kills",
+    "deaths",
+    "assists",
+    "kda",
+    "cs_per_min",
+    "jungle_cs",
+    "gold_per_min",
+    "damage_per_min",
+    "damage_taken_per_min",
+    "damage_mitigated",
+    "damage_share",
+    "vision_per_min",
+    "wards_placed",
+    "wards_killed",
+    "control_wards",
+    "turret_plates",
+    "turrets",
+    "dragons",
+    "barons",
+    "cs_at_10",
+    "cs_advantage",
+    "gold_advantage",
+    "kill_participation",
+    "solo_kills",
+    "multikills",
+    "cc_time",
+    "healing",
+    "shielding",
+    "time_dead_pct",
+    "longest_living",
+    "skillshots_hit",
+    "skillshots_dodged",
+    "first_blood",
+    "first_tower",
+    "game_duration"
+  ],
+  "metrics": {
+    "TOP": {
+      "rmse": 7.242400466606961,
+      "mae": 5.90336579073676,
+      "r2": 0.7218322247429949,
+      "samples_train": 448,
+      "samples_test": 113,
+      "feature_importance": [
+        {
+          "feature": "kda",
+          "importance": 0.26150429248809814
+        },
+        {
+          "feature": "gold_per_min",
+          "importance": 0.16444489359855652
+        },
+        {
+          "feature": "turrets",
+          "importance": 0.0748482272028923
+        },
+        {
+          "feature": "damage_per_min",
+          "importance": 0.03685711696743965
+        },
+        {
+          "feature": "first_tower",
+          "importance": 0.03194017708301544
+        },
+        {
+          "feature": "skillshots_dodged",
+          "importance": 0.028397182002663612
+        },
+        {
+          "feature": "solo_kills",
+          "importance": 0.025935443118214607
+        },
+        {
+          "feature": "wards_killed",
+          "importance": 0.025742139667272568
+        },
+        {
+          "feature": "assists",
+          "importance": 0.023495959118008614
+        },
+        {
+          "feature": "kill_participation",
+          "importance": 0.022898538038134575
+        },
+        {
+          "feature": "damage_share",
+          "importance": 0.021977223455905914
+        },
+        {
+          "feature": "damage_taken_per_min",
+          "importance": 0.021469436585903168
+        },
+        {
+          "feature": "jungle_cs",
+          "importance": 0.01826251856982708
+        },
+        {
+          "feature": "healing",
+          "importance": 0.017090171575546265
+        },
+        {
+          "feature": "turret_plates",
+          "importance": 0.016660692170262337
+        },
+        {
+          "feature": "time_dead_pct",
+          "importance": 0.014504277147352695
+        },
+        {
+          "feature": "cs_advantage",
+          "importance": 0.013445749878883362
+        },
+        {
+          "feature": "deaths",
+          "importance": 0.013253540731966496
+        },
+        {
+          "feature": "first_blood",
+          "importance": 0.012740903533995152
+        },
+        {
+          "feature": "wards_placed",
+          "importance": 0.012656059116125107
+        },
+        {
+          "feature": "multikills",
+          "importance": 0.01259115431457758
+        },
+        {
+          "feature": "vision_per_min",
+          "importance": 0.011818988248705864
+        },
+        {
+          "feature": "game_duration",
+          "importance": 0.011300008744001389
+        },
+        {
+          "feature": "damage_mitigated",
+          "importance": 0.011116737499833107
+        },
+        {
+          "feature": "shielding",
+          "importance": 0.010996757075190544
+        },
+        {
+          "feature": "skillshots_hit",
+          "importance": 0.010708101093769073
+        },
+        {
+          "feature": "longest_living",
+          "importance": 0.01055832952260971
+        },
+        {
+          "feature": "barons",
+          "importance": 0.010448628105223179
+        },
+        {
+          "feature": "cs_at_10",
+          "importance": 0.009193883277475834
+        },
+        {
+          "feature": "dragons",
+          "importance": 0.009050791151821613
+        },
+        {
+          "feature": "control_wards",
+          "importance": 0.008612855337560177
+        },
+        {
+          "feature": "gold_advantage",
+          "importance": 0.007959410548210144
+        },
+        {
+          "feature": "cc_time",
+          "importance": 0.007145965937525034
+        },
+        {
+          "feature": "cs_per_min",
+          "importance": 0.005467369686812162
+        },
+        {
+          "feature": "kills",
+          "importance": 0.00490646343678236
+        }
+      ]
+    },
+    "JUNGLE": {
+      "rmse": 6.5384761159479945,
+      "mae": 4.5905645167620825,
+      "r2": 0.7892390185035378,
+      "samples_train": 453,
+      "samples_test": 114,
+      "feature_importance": [
+        {
+          "feature": "kda",
+          "importance": 0.31754982471466064
+        },
+        {
+          "feature": "barons",
+          "importance": 0.13000370562076569
+        },
+        {
+          "feature": "dragons",
+          "importance": 0.11233524978160858
+        },
+        {
+          "feature": "gold_per_min",
+          "importance": 0.09546556323766708
+        },
+        {
+          "feature": "turrets",
+          "importance": 0.040977057069540024
+        },
+        {
+          "feature": "deaths",
+          "importance": 0.029331551864743233
+        },
+        {
+          "feature": "cs_advantage",
+          "importance": 0.027614591643214226
+        },
+        {
+          "feature": "damage_per_min",
+          "importance": 0.022946791723370552
+        },
+        {
+          "feature": "assists",
+          "importance": 0.020755983889102936
+        },
+        {
+          "feature": "time_dead_pct",
+          "importance": 0.01730538345873356
+        },
+        {
+          "feature": "kill_participation",
+          "importance": 0.014633913524448872
+        },
+        {
+          "feature": "jungle_cs",
+          "importance": 0.01440725289285183
+        },
+        {
+          "feature": "gold_advantage",
+          "importance": 0.013353792019188404
+        },
+        {
+          "feature": "damage_share",
+          "importance": 0.012792147696018219
+        },
+        {
+          "feature": "damage_mitigated",
+          "importance": 0.01086279097944498
+        },
+        {
+          "feature": "cc_time",
+          "importance": 0.010714869946241379
+        },
+        {
+          "feature": "healing",
+          "importance": 0.010331366211175919
+        },
+        {
+          "feature": "skillshots_dodged",
+          "importance": 0.009876219555735588
+        },
+        {
+          "feature": "multikills",
+          "importance": 0.009074307046830654
+        },
+        {
+          "feature": "control_wards",
+          "importance": 0.00867363903671503
+        },
+        {
+          "feature": "wards_killed",
+          "importance": 0.007857581600546837
+        },
+        {
+          "feature": "kills",
+          "importance": 0.006883213296532631
+        },
+        {
+          "feature": "solo_kills",
+          "importance": 0.00639622425660491
+        },
+        {
+          "feature": "wards_placed",
+          "importance": 0.00622181873768568
+        },
+        {
+          "feature": "longest_living",
+          "importance": 0.006122275721281767
+        },
+        {
+          "feature": "vision_per_min",
+          "importance": 0.005869552027434111
+        },
+        {
+          "feature": "cs_at_10",
+          "importance": 0.005109164863824844
+        },
+        {
+          "feature": "turret_plates",
+          "importance": 0.004917406477034092
+        },
+        {
+          "feature": "game_duration",
+          "importance": 0.004775748588144779
+        },
+        {
+          "feature": "damage_taken_per_min",
+          "importance": 0.004774002358317375
+        },
+        {
+          "feature": "first_blood",
+          "importance": 0.0036240702029317617
+        },
+        {
+          "feature": "skillshots_hit",
+          "importance": 0.003586624516174197
+        },
+        {
+          "feature": "cs_per_min",
+          "importance": 0.0034523054491728544
+        },
+        {
+          "feature": "shielding",
+          "importance": 0.0014041075482964516
+        },
+        {
+          "feature": "first_tower",
+          "importance": 0.0
+        }
+      ]
+    },
+    "MIDDLE": {
+      "rmse": 7.5805935706191505,
+      "mae": 5.750044394913538,
+      "r2": 0.6748219885157425,
+      "samples_train": 449,
+      "samples_test": 113,
+      "feature_importance": [
+        {
+          "feature": "kda",
+          "importance": 0.21890729665756226
+        },
+        {
+          "feature": "turrets",
+          "importance": 0.18166159093379974
+        },
+        {
+          "feature": "gold_per_min",
+          "importance": 0.14795008301734924
+        },
+        {
+          "feature": "damage_per_min",
+          "importance": 0.03304273262619972
+        },
+        {
+          "feature": "assists",
+          "importance": 0.026323119178414345
+        },
+        {
+          "feature": "time_dead_pct",
+          "importance": 0.024743998423218727
+        },
+        {
+          "feature": "kill_participation",
+          "importance": 0.02389291673898697
+        },
+        {
+          "feature": "first_blood",
+          "importance": 0.022661641240119934
+        },
+        {
+          "feature": "solo_kills",
+          "importance": 0.021042600274086
+        },
+        {
+          "feature": "shielding",
+          "importance": 0.020961327478289604
+        },
+        {
+          "feature": "game_duration",
+          "importance": 0.020821254700422287
+        },
+        {
+          "feature": "skillshots_dodged",
+          "importance": 0.01817520335316658
+        },
+        {
+          "feature": "first_tower",
+          "importance": 0.018141718581318855
+        },
+        {
+          "feature": "cs_advantage",
+          "importance": 0.01506586279720068
+        },
+        {
+          "feature": "damage_share",
+          "importance": 0.014394334517419338
+        },
+        {
+          "feature": "jungle_cs",
+          "importance": 0.013850519433617592
+        },
+        {
+          "feature": "wards_killed",
+          "importance": 0.013643225654959679
+        },
+        {
+          "feature": "barons",
+          "importance": 0.012406542897224426
+        },
+        {
+          "feature": "damage_taken_per_min",
+          "importance": 0.01238966640084982
+        },
+        {
+          "feature": "vision_per_min",
+          "importance": 0.012021632865071297
+        },
+        {
+          "feature": "multikills",
+          "importance": 0.01201267633587122
+        },
+        {
+          "feature": "healing",
+          "importance": 0.011552346870303154
+        },
+        {
+          "feature": "cc_time",
+          "importance": 0.011410637758672237
+        },
+        {
+          "feature": "turret_plates",
+          "importance": 0.011222426779568195
+        },
+        {
+          "feature": "cs_at_10",
+          "importance": 0.010066128335893154
+        },
+        {
+          "feature": "longest_living",
+          "importance": 0.009594007395207882
+        },
+        {
+          "feature": "deaths",
+          "importance": 0.00891873612999916
+        },
+        {
+          "feature": "cs_per_min",
+          "importance": 0.008790944702923298
+        },
+        {
+          "feature": "damage_mitigated",
+          "importance": 0.008474310860037804
+        },
+        {
+          "feature": "control_wards",
+          "importance": 0.007741402834653854
+        },
+        {
+          "feature": "wards_placed",
+          "importance": 0.006856430787593126
+        },
+        {
+          "feature": "skillshots_hit",
+          "importance": 0.006648327223956585
+        },
+        {
+          "feature": "dragons",
+          "importance": 0.0063492050394415855
+        },
+        {
+          "feature": "gold_advantage",
+          "importance": 0.0043631307780742645
+        },
+        {
+          "feature": "kills",
+          "importance": 0.00390209280885756
+        }
+      ]
+    },
+    "BOTTOM": {
+      "rmse": 6.565894318306626,
+      "mae": 5.044275342726805,
+      "r2": 0.8039190690062376,
+      "samples_train": 448,
+      "samples_test": 113,
+      "feature_importance": [
+        {
+          "feature": "kda",
+          "importance": 0.24428246915340424
+        },
+        {
+          "feature": "turrets",
+          "importance": 0.19682881236076355
+        },
+        {
+          "feature": "gold_per_min",
+          "importance": 0.17035464942455292
+        },
+        {
+          "feature": "assists",
+          "importance": 0.023108916357159615
+        },
+        {
+          "feature": "barons",
+          "importance": 0.021779848262667656
+        },
+        {
+          "feature": "damage_per_min",
+          "importance": 0.02065552957355976
+        },
+        {
+          "feature": "damage_taken_per_min",
+          "importance": 0.018280139192938805
+        },
+        {
+          "feature": "damage_share",
+          "importance": 0.017711564898490906
+        },
+        {
+          "feature": "time_dead_pct",
+          "importance": 0.01646376959979534
+        },
+        {
+          "feature": "kill_participation",
+          "importance": 0.015181298367679119
+        },
+        {
+          "feature": "game_duration",
+          "importance": 0.014219533652067184
+        },
+        {
+          "feature": "gold_advantage",
+          "importance": 0.014100361615419388
+        },
+        {
+          "feature": "turret_plates",
+          "importance": 0.013752712868154049
+        },
+        {
+          "feature": "shielding",
+          "importance": 0.01352166198194027
+        },
+        {
+          "feature": "deaths",
+          "importance": 0.012775835581123829
+        },
+        {
+          "feature": "first_blood",
+          "importance": 0.012657620012760162
+        },
+        {
+          "feature": "cs_at_10",
+          "importance": 0.01231804396957159
+        },
+        {
+          "feature": "wards_killed",
+          "importance": 0.012302088551223278
+        },
+        {
+          "feature": "wards_placed",
+          "importance": 0.012018890120089054
+        },
+        {
+          "feature": "damage_mitigated",
+          "importance": 0.011884845793247223
+        },
+        {
+          "feature": "cs_advantage",
+          "importance": 0.011736786924302578
+        },
+        {
+          "feature": "skillshots_dodged",
+          "importance": 0.01164645329117775
+        },
+        {
+          "feature": "solo_kills",
+          "importance": 0.011210794560611248
+        },
+        {
+          "feature": "vision_per_min",
+          "importance": 0.011018244549632072
+        },
+        {
+          "feature": "skillshots_hit",
+          "importance": 0.009918314404785633
+        },
+        {
+          "feature": "dragons",
+          "importance": 0.009767399169504642
+        },
+        {
+          "feature": "multikills",
+          "importance": 0.009470655582845211
+        },
+        {
+          "feature": "control_wards",
+          "importance": 0.009216094389557838
+        },
+        {
+          "feature": "jungle_cs",
+          "importance": 0.008540494367480278
+        },
+        {
+          "feature": "cc_time",
+          "importance": 0.007892435416579247
+        },
+        {
+          "feature": "longest_living",
+          "importance": 0.00669073686003685
+        },
+        {
+          "feature": "healing",
+          "importance": 0.005761332344263792
+        },
+        {
+          "feature": "cs_per_min",
+          "importance": 0.005706850904971361
+        },
+        {
+          "feature": "kills",
+          "importance": 0.004537626635283232
+        },
+        {
+          "feature": "first_tower",
+          "importance": 0.0026871333830058575
+        }
+      ]
+    },
+    "UTILITY": {
+      "rmse": 6.434504044525793,
+      "mae": 4.858102960219109,
+      "r2": 0.7361876898899947,
+      "samples_train": 447,
+      "samples_test": 112,
+      "feature_importance": [
+        {
+          "feature": "gold_per_min",
+          "importance": 0.23678413033485413
+        },
+        {
+          "feature": "kda",
+          "importance": 0.16802537441253662
+        },
+        {
+          "feature": "turrets",
+          "importance": 0.0745229572057724
+        },
+        {
+          "feature": "assists",
+          "importance": 0.04424304887652397
+        },
+        {
+          "feature": "time_dead_pct",
+          "importance": 0.031148146837949753
+        },
+        {
+          "feature": "damage_taken_per_min",
+          "importance": 0.030426492914557457
+        },
+        {
+          "feature": "damage_per_min",
+          "importance": 0.029261451214551926
+        },
+        {
+          "feature": "gold_advantage",
+          "importance": 0.027312351390719414
+        },
+        {
+          "feature": "dragons",
+          "importance": 0.026604099199175835
+        },
+        {
+          "feature": "damage_share",
+          "importance": 0.02406962215900421
+        },
+        {
+          "feature": "kill_participation",
+          "importance": 0.021663600578904152
+        },
+        {
+          "feature": "shielding",
+          "importance": 0.018964111804962158
+        },
+        {
+          "feature": "cs_advantage",
+          "importance": 0.018533267080783844
+        },
+        {
+          "feature": "longest_living",
+          "importance": 0.01780831441283226
+        },
+        {
+          "feature": "wards_killed",
+          "importance": 0.016774911433458328
+        },
+        {
+          "feature": "game_duration",
+          "importance": 0.01665596477687359
+        },
+        {
+          "feature": "solo_kills",
+          "importance": 0.01618422009050846
+        },
+        {
+          "feature": "damage_mitigated",
+          "importance": 0.015816068276762962
+        },
+        {
+          "feature": "vision_per_min",
+          "importance": 0.013869712129235268
+        },
+        {
+          "feature": "healing",
+          "importance": 0.013237209990620613
+        },
+        {
+          "feature": "turret_plates",
+          "importance": 0.013028697110712528
+        },
+        {
+          "feature": "wards_placed",
+          "importance": 0.012595722451806068
+        },
+        {
+          "feature": "jungle_cs",
+          "importance": 0.012438108213245869
+        },
+        {
+          "feature": "cc_time",
+          "importance": 0.012307285331189632
+        },
+        {
+          "feature": "deaths",
+          "importance": 0.011877866461873055
+        },
+        {
+          "feature": "skillshots_dodged",
+          "importance": 0.011334843002259731
+        },
+        {
+          "feature": "cs_per_min",
+          "importance": 0.010182561352849007
+        },
+        {
+          "feature": "skillshots_hit",
+          "importance": 0.00957473088055849
+        },
+        {
+          "feature": "kills",
+          "importance": 0.009180263616144657
+        },
+        {
+          "feature": "cs_at_10",
+          "importance": 0.008113101124763489
+        },
+        {
+          "feature": "multikills",
+          "importance": 0.007181159220635891
+        },
+        {
+          "feature": "control_wards",
+          "importance": 0.006743710488080978
+        },
+        {
+          "feature": "barons",
+          "importance": 0.006015515886247158
+        },
+        {
+          "feature": "first_blood",
+          "importance": 0.00598773080855608
+        },
+        {
+          "feature": "first_tower",
+          "importance": 0.0015336613869294524
+        }
+      ]
+    }
+  }
+}
