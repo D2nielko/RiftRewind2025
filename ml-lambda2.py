@@ -14,10 +14,30 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import mean_squared_error, accuracy_score
 
+# Performance prediction
+from ml_training.performance_predictor import PerformancePredictor
+
 s3_client = boto3.client('s3')
 bedrock = boto3.client('bedrock-runtime', region_name='us-east-2')
 logger = logging.getLogger()
 logger.setLevel("INFO")
+
+# Global performance predictor (lazy loaded)
+_performance_predictor = None
+
+def get_performance_predictor():
+    """Lazy load performance predictor"""
+    global _performance_predictor
+    if _performance_predictor is None:
+        try:
+            bucket = os.environ.get('MODEL_BUCKET', 'riftrewind-models')
+            logger.info("Loading performance models from S3...")
+            _performance_predictor = PerformancePredictor(s3_client=s3_client, bucket=bucket)
+            logger.info("✅ Performance models loaded")
+        except Exception as e:
+            logger.error(f"Failed to load performance models: {e}")
+            _performance_predictor = None
+    return _performance_predictor
 
 def lambda_handler(event, context):
     """ML Processor Lambda with smart caching"""
@@ -60,7 +80,14 @@ def lambda_handler(event, context):
         # Run ML algorithms
         logger.info(f"🔬 Running ML analysis: {reason}")
         ml_results = run_comprehensive_ml_analysis(features, metadata)
-        
+
+        # Add performance scores
+        logger.info("📊 Computing performance scores...")
+        performance_scores = compute_performance_scores(raw_data, puuid)
+        if performance_scores:
+            ml_results['performance_scores'] = performance_scores
+            logger.info(f"✅ Computed {len(performance_scores)} performance scores")
+
         # Store metadata
         ml_results['processed_match_ids'] = [m['matchId'] for m in metadata]
         ml_results['last_updated'] = datetime.utcnow().isoformat()
@@ -327,7 +354,7 @@ def compute_statistics(features, metadata):
         stats['avg_kda'] = stats['total_kda'] / stats['games']
     
     top_champions = sorted(champion_stats.items(), key=lambda x: x[1]['games'], reverse=True)[:5]
-    
+
     return {
         'total_games': total,
         'wins': wins,
@@ -350,6 +377,72 @@ def compute_statistics(features, metadata):
             for champ, stats in top_champions
         ]
     }
+
+def compute_performance_scores(raw_data, puuid):
+    """
+    Compute performance scores for all matches using trained ML models
+
+    Returns:
+        List of performance scores with match metadata
+    """
+    predictor = get_performance_predictor()
+
+    if not predictor:
+        logger.warning("Performance predictor not available")
+        return None
+
+    matches = raw_data.get('matches', [])
+    performance_scores = []
+
+    for match in matches:
+        match_info = match['info']
+
+        # Find the player's participant data
+        for participant in match_info['participants']:
+            if participant['puuid'] == puuid:
+                # Predict performance score
+                prediction = predictor.predict_performance(participant, match_info)
+
+                if prediction:
+                    performance_scores.append({
+                        'match_id': match['metadata']['matchId'],
+                        'champion': participant['championName'],
+                        'role': participant['individualPosition'],
+                        'performance_score': prediction['performance_score'],
+                        'grade': prediction['grade'],
+                        'percentile': prediction['percentile'],
+                        'win': participant['win'],
+                        'kda': (participant['kills'] + participant['assists']) / max(participant['deaths'], 1),
+                        'game_duration': match_info['gameDuration'] / 60
+                    })
+                break
+
+    # Calculate summary stats
+    if performance_scores:
+        scores = [s['performance_score'] for s in performance_scores]
+        summary = {
+            'matches': performance_scores,
+            'summary': {
+                'avg_score': float(np.mean(scores)),
+                'max_score': float(np.max(scores)),
+                'min_score': float(np.min(scores)),
+                'std_score': float(np.std(scores)),
+                'avg_grade': calculate_avg_grade(performance_scores)
+            }
+        }
+        return summary
+
+    return None
+
+def calculate_avg_grade(scores):
+    """Calculate average letter grade"""
+    grade_values = {'S': 5, 'A': 4, 'B': 3, 'C': 2, 'D': 1, 'F': 0}
+    value_to_grade = {5: 'S', 4: 'A', 3: 'B', 2: 'C', 1: 'D', 0: 'F'}
+
+    values = [grade_values.get(s['grade'], 0) for s in scores]
+    avg_value = round(np.mean(values))
+
+    return value_to_grade.get(avg_value, 'C')
 
 def should_recompute_ml(raw_data, existing_ml):
     """Check if recomputation needed"""
