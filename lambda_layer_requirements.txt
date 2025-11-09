@@ -1,0 +1,12 @@
+# Lambda Layer Requirements
+# For deploying ML models in AWS Lambda
+# Create layer: pip install -r lambda_layer_requirements.txt -t python/
+
+# Core scientific computing (already in Lambda runtime for numpy/scipy)
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# XGBoost for model inference
+xgboost>=2.0.0
+
+# Note: boto3 is already available in Lambda runtime
