@@ -28,7 +28,7 @@ app = Flask(__name__)
 MODEL_DIR = 'ml_training/models/'
 MODELS_BUCKET = os.environ.get('MODELS_BUCKET')  # S3 bucket for models (optional)
 SECRET_NAME = os.environ.get('SECRET_NAME', 'riftrewind/riot-api-key')
-AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
+AWS_REGION = os.environ.get('AWS_REGION', 'us-east-2')
 
 # Get Riot API key (try AWS Secrets Manager first, then environment variable)
 RIOT_API_KEY = ''
