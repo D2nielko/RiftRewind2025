@@ -26,7 +26,7 @@ def init_resources():
     # Get configuration from environment
     secret_name = os.environ.get('SECRET_NAME', 'riftrewind/riot-api-key')
     models_bucket = os.environ.get('MODELS_BUCKET')
-    region = os.environ.get('AWS_REGION', 'us-east-1')
+    region = os.environ.get('AWS_REGION', 'us-east-2')
 
     # Get Riot API key from Secrets Manager
     secrets_client = boto3.client('secretsmanager', region_name=region)

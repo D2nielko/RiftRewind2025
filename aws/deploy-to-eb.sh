@@ -18,7 +18,7 @@ if ! aws sts get-caller-identity &> /dev/null; then
 fi
 
 # Configuration
-REGION=${AWS_REGION:-us-east-1}
+REGION=${AWS_REGION:-us-east-2}
 BUCKET_NAME=${MODELS_BUCKET:-riftrewind-models-$(date +%s)}
 SECRET_NAME="riftrewind/riot-api-key"
 APP_NAME="riftrewind"

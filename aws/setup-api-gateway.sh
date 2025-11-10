@@ -10,7 +10,7 @@ echo ""
 
 # Configuration
 FUNCTION_NAME=${LAMBDA_FUNCTION_NAME:-riftrewind-api}
-REGION=${AWS_REGION:-us-east-1}
+REGION=${AWS_REGION:-us-east-2}
 API_NAME="riftrewind-api"
 STAGE_NAME="prod"
 

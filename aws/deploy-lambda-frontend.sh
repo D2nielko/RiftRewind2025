@@ -6,7 +6,7 @@ set -e
 echo "🌐 Deploying RiftRewind Frontend to S3"
 
 # Configuration
-REGION=${AWS_REGION:-us-east-1}
+REGION=${AWS_REGION:-us-east-2}
 BUCKET_NAME=${WEBSITE_BUCKET:-riftrewind-web-$(date +%s)}
 API_GATEWAY_URL=${API_GATEWAY_URL:-}
 
@@ -21,7 +21,7 @@ if [ -z "$API_GATEWAY_URL" ]; then
     echo ""
     echo "⚠️  API Gateway URL not set!"
     echo ""
-    read -p "Enter your API Gateway URL (e.g., https://abc123.execute-api.us-east-1.amazonaws.com/prod): " API_GATEWAY_URL
+    read -p "Enter your API Gateway URL (e.g., https://abc123.execute-api.us-east-2.amazonaws.com/prod): " API_GATEWAY_URL
 
     if [ -z "$API_GATEWAY_URL" ]; then
         echo "❌ No API Gateway URL provided"

@@ -6,7 +6,7 @@ set -e
 echo "🔧 Setting up AWS resources for RiftRewind"
 
 # Configuration
-REGION=${AWS_REGION:-us-east-1}
+REGION=${AWS_REGION:-us-east-2}
 BUCKET_NAME=${MODELS_BUCKET:-riftrewind-models-$(date +%s)}
 SECRET_NAME="riftrewind/riot-api-key"
 

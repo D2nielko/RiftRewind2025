@@ -4,7 +4,7 @@
 set -e
 
 FUNCTION_NAME=${1:-riftrewind-api}
-REGION=${AWS_REGION:-us-east-1}
+REGION=${AWS_REGION:-us-east-2}
 
 echo "🧪 Testing Lambda Function: ${FUNCTION_NAME}"
 echo ""
