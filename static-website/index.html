@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiftRewind - League of Legends Performance Tracker</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RiftRewind</h1>
+            <p class="subtitle">Track Your League of Legends Performance</p>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2>Enter Player Information</h2>
+                <form id="player-form">
+                    <div class="form-group">
+                        <label for="gameName">Game Name</label>
+                        <input
+                            type="text"
+                            id="gameName"
+                            name="gameName"
+                            placeholder="Enter summoner name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tagLine">Tagline</label>
+                        <input
+                            type="text"
+                            id="tagLine"
+                            name="tagLine"
+                            placeholder="Enter tagline (e.g., NA1)"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region">Region</label>
+                        <select id="region" name="region" required>
+                            <option value="">Select a region</option>
+                            <option value="NA">NA - North America</option>
+                            <option value="EUW">EUW - Europe West</option>
+                            <option value="EUNE">EUNE - Europe Nordic & East</option>
+                            <option value="KR">KR - Korea</option>
+                            <option value="BR">BR - Brazil</option>
+                            <option value="LAN">LAN - Latin America North</option>
+                            <option value="LAS">LAS - Latin America South</option>
+                            <option value="OCE">OCE - Oceania</option>
+                            <option value="TR">TR - Turkey</option>
+                            <option value="RU">RU - Russia</option>
+                            <option value="JP">JP - Japan</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        Analyze Performance
+                    </button>
+                </form>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing match history...</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+            </div>
+
+            <div class="info-section">
+                <h3>How It Works</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">1</div>
+                        <h4>Enter Details</h4>
+                        <p>Provide your summoner name, tagline, and region</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">2</div>
+                        <h4>Fetch Matches</h4>
+                        <p>We retrieve your last 10 ranked games</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">3</div>
+                        <h4>AI Analysis</h4>
+                        <p>Our ML models analyze your performance</p>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">4</div>
+                        <h4>View Results</h4>
+                        <p>See detailed scores and insights</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 RiftRewind. Not endorsed by Riot Games.</p>
+        </footer>
+    </div>
+
+    <!-- Load configuration first -->
+    <script src="js/config.js"></script>
+
+    <script>
+        const form = document.getElementById('player-form');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Check if API endpoint is configured
+        if (API_CONFIG.API_ENDPOINT === 'YOUR_API_GATEWAY_URL_HERE') {
+            showError('⚠️ API not configured. Please update js/config.js with your API Gateway URL.');
+            submitBtn.disabled = true;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const formData = {
+                gameName: document.getElementById('gameName').value.trim(),
+                tagLine: document.getElementById('tagLine').value.trim(),
+                region: document.getElementById('region').value
+            };
+
+            // Validate
+            if (!formData.gameName || !formData.tagLine || !formData.region) {
+                showError('Please fill in all fields');
+                return;
+            }
+
+            // Show loading
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            submitBtn.disabled = true;
+
+            try {
+                // Call API using the helper function from config.js
+                const data = await callAPI('/api/player-performance', 'POST', formData);
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to fetch player data');
+                }
+
+                // Store data in sessionStorage and redirect to results
+                sessionStorage.setItem('playerData', JSON.stringify(data));
+                window.location.href = 'results.html';
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
