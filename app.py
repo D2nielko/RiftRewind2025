@@ -7,6 +7,7 @@ performance scores for their last 10 games.
 
 import os
 import sys
+import json
 from flask import Flask, render_template, request, jsonify
 import logging
 
@@ -23,8 +24,35 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Configuration
-RIOT_API_KEY = os.environ.get('RIOT_API_KEY', '')
 MODEL_DIR = 'ml_training/models/'
+MODELS_BUCKET = os.environ.get('MODELS_BUCKET')  # S3 bucket for models (optional)
+SECRET_NAME = os.environ.get('SECRET_NAME', 'riftrewind/riot-api-key')
+AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
+
+# Get Riot API key (try AWS Secrets Manager first, then environment variable)
+RIOT_API_KEY = ''
+try:
+    # Try to get from AWS Secrets Manager if available
+    if SECRET_NAME and not os.environ.get('RIOT_API_KEY'):
+        try:
+            import boto3
+            secrets_client = boto3.client('secretsmanager', region_name=AWS_REGION)
+            secret_response = secrets_client.get_secret_value(SecretId=SECRET_NAME)
+            secret_data = json.loads(secret_response['SecretString'])
+            RIOT_API_KEY = secret_data['RIOT_API_KEY']
+            logger.info("Riot API key loaded from AWS Secrets Manager")
+        except ImportError:
+            logger.info("boto3 not available, skipping AWS Secrets Manager")
+        except Exception as e:
+            logger.warning(f"Could not load from Secrets Manager: {e}")
+
+    # Fall back to environment variable
+    if not RIOT_API_KEY:
+        RIOT_API_KEY = os.environ.get('RIOT_API_KEY', '')
+        if RIOT_API_KEY:
+            logger.info("Riot API key loaded from environment variable")
+except Exception as e:
+    logger.error(f"Error loading API key: {e}")
 
 # Region mappings
 REGION_MAPPINGS = {
@@ -43,8 +71,25 @@ REGION_MAPPINGS = {
 
 # Initialize predictor
 try:
-    predictor = PerformancePredictor(model_dir=MODEL_DIR)
-    logger.info("Performance predictor loaded successfully")
+    # Use S3 if MODELS_BUCKET is specified
+    if MODELS_BUCKET:
+        try:
+            import boto3
+            s3_client = boto3.client('s3', region_name=AWS_REGION)
+            predictor = PerformancePredictor(
+                model_dir='models/',
+                s3_client=s3_client,
+                bucket=MODELS_BUCKET
+            )
+            logger.info(f"Performance predictor loaded from S3 bucket: {MODELS_BUCKET}")
+        except Exception as e:
+            logger.error(f"Failed to load from S3, trying local: {e}")
+            predictor = PerformancePredictor(model_dir=MODEL_DIR)
+            logger.info("Performance predictor loaded from local storage")
+    else:
+        # Load from local directory
+        predictor = PerformancePredictor(model_dir=MODEL_DIR)
+        logger.info("Performance predictor loaded from local storage")
 except Exception as e:
     logger.error(f"Failed to load performance predictor: {e}")
     predictor = None
