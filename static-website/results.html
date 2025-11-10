@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Results - RiftRewind</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RiftRewind</h1>
+            <p class="subtitle">Performance Analysis</p>
+        </header>
+
+        <main>
+            <div class="back-link">
+                <a href="index.html">&larr; Analyze Another Player</a>
+            </div>
+
+            <div id="results-container">
+                <!-- Player summary -->
+                <div class="player-summary" id="player-summary" style="display: none;">
+                    <h2 id="player-name"></h2>
+                    <div class="summary-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Matches Analyzed</div>
+                            <div class="stat-value" id="total-matches">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Average Score</div>
+                            <div class="stat-value" id="avg-score">0</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Win Rate</div>
+                            <div class="stat-value" id="win-rate">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match list -->
+                <div class="matches-section" id="matches-section" style="display: none;">
+                    <h3>Recent Matches</h3>
+                    <div id="matches-list"></div>
+                </div>
+
+                <!-- Error message -->
+                <div id="error-container" class="error-message" style="display: none;">
+                    <p id="error-text"></p>
+                    <a href="index.html" class="btn-primary">Go Back</a>
+                </div>
+
+                <!-- Loading state -->
+                <div id="loading-results" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading results...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 RiftRewind. Not endorsed by Riot Games.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Load data from sessionStorage
+        const playerDataStr = sessionStorage.getItem('playerData');
+
+        if (!playerDataStr) {
+            // No data, redirect back
+            window.location.href = 'index.html';
+        } else {
+            const data = JSON.parse(playerDataStr);
+            displayResults(data);
+        }
+
+        function displayResults(data) {
+            const loadingEl = document.getElementById('loading-results');
+            const summaryEl = document.getElementById('player-summary');
+            const matchesEl = document.getElementById('matches-section');
+
+            // Hide loading
+            loadingEl.style.display = 'none';
+
+            // Show summary
+            summaryEl.style.display = 'block';
+
+            // Populate player summary
+            const playerName = `${data.player.gameName}#${data.player.tagLine}`;
+            document.getElementById('player-name').textContent = playerName;
+            document.getElementById('total-matches').textContent = data.summary.total_matches;
+            document.getElementById('avg-score').textContent = data.summary.average_score.toFixed(1);
+
+            const winRate = (data.summary.wins / data.summary.total_matches * 100).toFixed(1);
+            document.getElementById('win-rate').textContent = `${winRate}%`;
+
+            // Show matches section
+            matchesEl.style.display = 'block';
+
+            // Populate matches
+            const matchesList = document.getElementById('matches-list');
+            matchesList.innerHTML = '';
+
+            data.matches.forEach((match, index) => {
+                const matchCard = createMatchCard(match, index + 1);
+                matchesList.appendChild(matchCard);
+            });
+        }
+
+        function createMatchCard(match, index) {
+            const card = document.createElement('div');
+            card.className = `match-card ${match.win ? 'win' : 'loss'}`;
+
+            const gradeClass = getGradeClass(match.grade);
+            const resultText = match.win ? 'VICTORY' : 'DEFEAT';
+
+            card.innerHTML = `
+                <div class="match-header">
+                    <div class="match-number">#${index}</div>
+                    <div class="match-result ${match.win ? 'win-text' : 'loss-text'}">${resultText}</div>
+                    <div class="match-duration">${match.game_duration}</div>
+                </div>
+
+                <div class="match-body">
+                    <div class="match-champion">
+                        <div class="champion-name">${match.champion}</div>
+                        <div class="champion-role">${match.role}</div>
+                    </div>
+
+                    <div class="match-performance">
+                        <div class="performance-score ${gradeClass}">
+                            <div class="score-value">${match.performance_score.toFixed(1)}</div>
+                            <div class="score-label">Performance</div>
+                        </div>
+                        <div class="performance-grade ${gradeClass}">
+                            <div class="grade-value">${match.grade}</div>
+                            <div class="grade-label">Grade</div>
+                        </div>
+                    </div>
+
+                    <div class="match-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">KDA:</span>
+                            <span class="stat-value">${match.kda}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">CS:</span>
+                            <span class="stat-value">${match.cs}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Damage:</span>
+                            <span class="stat-value">${formatNumber(match.damage)}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Vision:</span>
+                            <span class="stat-value">${match.vision_score}</span>
+                        </div>
+                    </div>
+
+                    <div class="match-percentile">
+                        Top ${(100 - match.percentile).toFixed(0)}% of players
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function getGradeClass(grade) {
+            const gradeMap = {
+                'S': 'grade-s',
+                'A': 'grade-a',
+                'B': 'grade-b',
+                'C': 'grade-c',
+                'D': 'grade-d',
+                'F': 'grade-f'
+            };
+            return gradeMap[grade] || 'grade-f';
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num.toString();
+        }
+    </script>
+</body>
+</html>
