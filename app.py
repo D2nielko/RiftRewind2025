@@ -9,6 +9,7 @@ import os
 import sys
 import json
 from flask import Flask, render_template, request, jsonify
+from mangum import Mangum
 import logging
 
 # Add ml_training to path for imports
@@ -293,6 +294,8 @@ def results():
     """Results page (displays data via JavaScript fetch)"""
     return render_template('results.html')
 
+
+handler = Mangum(app)
 
 if __name__ == '__main__':
     if not RIOT_API_KEY:
