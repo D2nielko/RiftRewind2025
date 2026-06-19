@@ -32,7 +32,10 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--background-dark) 0%, var(--background-medium) 100%);
+    background:
+        linear-gradient(135deg, rgba(1, 10, 19, 0.55) 0%, rgba(10, 20, 40, 0.62) 100%),
+        url('../img/rift-bg.jpg') center center / cover no-repeat fixed;
+    background-color: var(--background-dark);
     color: var(--text-primary);
     min-height: 100vh;
     line-height: 1.6;
@@ -581,4 +584,60 @@ footer {
     padding-left: 20px;
     color: var(--text-secondary);
     font-size: 0.9rem;
+}
+
+/* ---- League of Legends cosmetics ---- */
+.hextech-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 18px auto 0;
+    max-width: 380px;
+}
+
+.hextech-divider .hd-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+}
+
+.hextech-divider .hd-gem {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 0 6px rgba(200, 155, 60, 0.5));
+    animation: hd-spin 6s linear infinite;
+}
+
+@keyframes hd-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Floating poro mascot */
+.poro-mascot {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 92px;
+    height: auto;
+    z-index: 50;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.55));
+    animation: poro-float 4s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.poro-mascot:hover {
+    transform: scale(1.12) rotate(-5deg);
+}
+
+@keyframes poro-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+}
+
+@media (max-width: 768px) {
+    .poro-mascot { width: 60px; bottom: 14px; right: 14px; }
 }
