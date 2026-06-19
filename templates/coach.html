@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiftRewind Coach — Ask Your Matches</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .coach-card {
+            background: var(--background-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .presets { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+        .preset-btn {
+            background: var(--background-medium);
+            color: var(--text-primary);
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .preset-btn:hover { background: var(--primary-color); }
+        #query {
+            width: 100%; padding: 14px; border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--background-dark); color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .ask-btn {
+            margin-top: 12px; background: var(--secondary-color);
+            color: var(--background-dark); border: none; border-radius: 6px;
+            padding: 12px 28px; font-weight: bold; cursor: pointer; font-size: 1rem;
+        }
+        .ask-btn:disabled { opacity: 0.5; cursor: wait; }
+        #answer { white-space: pre-wrap; line-height: 1.7; }
+        .source { border-left: 3px solid var(--primary-color); padding: 8px 12px;
+            margin: 8px 0; background: var(--background-medium); border-radius: 0 6px 6px 0; }
+        .source .tag { color: var(--secondary-color); font-weight: bold; }
+        .source .type { color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; }
+        .hidden { display: none; }
+        .error { color: var(--loss-color); }
+        .meta { color: var(--text-secondary); font-size: 0.85rem; margin-top: 6px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RiftRewind Coach</h1>
+            <p class="subtitle">Ask your last 20 matches anything</p>
+        </header>
+
+        <main>
+            <div class="coach-card">
+                <div class="presets">
+                    <button class="preset-btn" type="button"
+                        data-q="Why am I losing mid lane lately?">Why am I losing mid lane?</button>
+                    <button class="preset-btn" type="button"
+                        data-q="What should I build into an AD-heavy enemy team?">What to build vs AD-heavy comps?</button>
+                    <button class="preset-btn" type="button"
+                        data-q="Which of my recent games was my best performance and why?">My best recent game?</button>
+                </div>
+                <textarea id="query" rows="3" placeholder="e.g. Why am I losing mid lane?"></textarea>
+                <button id="ask" class="ask-btn" type="button">Ask the coach</button>
+                <p class="meta" id="status"></p>
+            </div>
+
+            <div id="result" class="coach-card hidden">
+                <h2>Answer</h2>
+                <div id="answer"></div>
+                <h2 style="margin-top:20px;">Sources used</h2>
+                <div id="sources"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const queryEl = document.getElementById('query');
+        const askBtn = document.getElementById('ask');
+        const statusEl = document.getElementById('status');
+        const resultEl = document.getElementById('result');
+        const answerEl = document.getElementById('answer');
+        const sourcesEl = document.getElementById('sources');
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                queryEl.value = btn.dataset.q;
+                ask();
+            });
+        });
+        askBtn.addEventListener('click', ask);
+
+        async function ask() {
+            const query = queryEl.value.trim();
+            if (!query) return;
+            askBtn.disabled = true;
+            statusEl.textContent = 'Retrieving matches & docs, then reranking…';
+            resultEl.classList.add('hidden');
+            try {
+                const resp = await fetch('/api/coach', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const data = await resp.json();
+                if (!data.success) throw new Error(data.error || 'Request failed');
+                answerEl.textContent = data.answer;
+                sourcesEl.innerHTML = data.sources.map(s =>
+                    `<div class="source"><span class="tag">[${s.tag}]</span>
+                     <span class="type">${s.type}</span> — ${s.title}
+                     <span class="meta">rerank ${s.rerank_score}</span></div>`
+                ).join('');
+                resultEl.classList.remove('hidden');
+                statusEl.textContent = '';
+            } catch (e) {
+                statusEl.innerHTML = `<span class="error">${e.message}</span>`;
+            } finally {
+                askBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

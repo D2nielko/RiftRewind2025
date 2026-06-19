@@ -295,6 +295,49 @@ def results():
     return render_template('results.html')
 
 
+@app.route('/coach')
+def coach():
+    """Natural-language coaching UI (Cohere retrieval layer)."""
+    return render_template('coach.html')
+
+
+@app.route('/api/coach', methods=['POST'])
+def coach_query():
+    """
+    Grounded coaching answer over the cached match + Data Dragon corpus.
+
+    Request:  { "query": "why am I losing mid lane?" }
+    Response: { "success": true, "answer": "...", "sources": [...] }
+
+    The corpus must be built first (offline):
+        python -m coaching.pipeline build --game-name NAME --tag-line TAG
+    """
+    try:
+        data = request.get_json() or {}
+        query = (data.get('query') or '').strip()
+        if not query:
+            return jsonify({'success': False, 'error': 'Query is required'}), 400
+
+        # Lazy import so the base app boots without cohere installed.
+        from coaching.pipeline import answer_query
+
+        result = answer_query(query)
+        return jsonify({
+            'success': True,
+            'answer': result['answer'],
+            'sources': result['sources'],
+        })
+    except FileNotFoundError:
+        return jsonify({
+            'success': False,
+            'error': 'Corpus not built yet. Run: '
+                     'python -m coaching.pipeline build --game-name NAME --tag-line TAG'
+        }), 503
+    except Exception as e:
+        logger.error(f"Coach query failed: {e}", exc_info=True)
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 handler = Mangum(app)
 
 if __name__ == '__main__':
