@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask the Coach - RiftRewind</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RiftRewind</h1>
+            <p class="subtitle">AI Coaching</p>
+            <nav class="header-nav">
+                <a href="index.html" class="nav-link">&larr; Performance Tracker</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2>Ask the Coach</h2>
+                <p class="coach-intro">
+                    Get grounded coaching advice based on your recent matches and
+                    current patch data.
+                </p>
+                <form id="coach-form">
+                    <div class="form-group">
+                        <label for="query">Your Question</label>
+                        <textarea
+                            id="query"
+                            name="query"
+                            rows="3"
+                            placeholder="e.g. How can I improve my mid lane play?"
+                            required
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        Ask
+                    </button>
+                </form>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Thinking through your matches...</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+            </div>
+
+            <div id="answer-section" class="answer-section" style="display: none;">
+                <h3>Coach's Answer</h3>
+                <div id="answer-text" class="answer-text"></div>
+                <div id="sources" class="sources"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 RiftRewind. Not endorsed by Riot Games.</p>
+        </footer>
+    </div>
+
+    <script src="js/config.js"></script>
+
+    <script>
+        const form = document.getElementById('coach-form');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const answerSection = document.getElementById('answer-section');
+        const answerText = document.getElementById('answer-text');
+        const sources = document.getElementById('sources');
+
+        if (API_CONFIG.API_ENDPOINT === 'YOUR_API_GATEWAY_URL_HERE') {
+            showError('⚠️ API not configured. Please update js/config.js with your API Gateway URL.');
+            submitBtn.disabled = true;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const query = document.getElementById('query').value.trim();
+            if (!query) {
+                showError('Please enter a question.');
+                return;
+            }
+
+            loading.style.display = 'block';
+            errorMessage.style.display = 'none';
+            answerSection.style.display = 'none';
+            submitBtn.disabled = true;
+
+            try {
+                const data = await callAPI('/api/coach', 'POST', { query });
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Coaching request failed');
+                }
+
+                answerText.textContent = data.answer;
+
+                sources.innerHTML = '';
+                if (Array.isArray(data.sources) && data.sources.length > 0) {
+                    const heading = document.createElement('h4');
+                    heading.textContent = 'Sources';
+                    sources.appendChild(heading);
+                    const list = document.createElement('ul');
+                    data.sources.forEach((s) => {
+                        const li = document.createElement('li');
+                        li.textContent = typeof s === 'string' ? s : (s.title || s.id || JSON.stringify(s));
+                        list.appendChild(li);
+                    });
+                    sources.appendChild(list);
+                }
+
+                answerSection.style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+            } finally {
+                loading.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
