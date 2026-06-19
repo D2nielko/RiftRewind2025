@@ -25,3 +25,18 @@ Thumbs.db
 venv/
 env/
 ENV/
+.venv/
+
+# Coaching tool: cached corpus + embeddings (regenerated from Riot/Data Dragon)
+coaching/cache/
+
+# Lambda layer build artifacts (regenerated from lambda_layer_requirements.txt)
+sklearn-lambda-layer/
+lambda-layer/
+lambda-deploy/
+*.zip
+
+# Scratch / sample match dumps
+NA1_*.json
+NA1_*.txt
+ml_training/training_data_copy.json

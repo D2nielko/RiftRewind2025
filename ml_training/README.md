@@ -133,7 +133,7 @@ aws lambda publish-layer-version \
 1. Add the layer to your Lambda function
 2. Set environment variable: `MODEL_BUCKET=your-bucket-name`
 3. Ensure Lambda IAM role has S3 read access
-4. Deploy updated `ml-lambda2.py`
+4. Deploy updated `app.py`
 
 ---
 
@@ -141,7 +141,7 @@ aws lambda publish-layer-version \
 
 ### In Lambda (Automatic)
 
-The performance predictor is automatically called in `ml-lambda2.py`:
+The performance predictor is automatically called in `app.py`:
 
 ```python
 # Performance scores are computed for all matches
