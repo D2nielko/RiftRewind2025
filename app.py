@@ -9,8 +9,15 @@ import os
 import sys
 import json
 from flask import Flask, render_template, request, jsonify
-from mangum import Mangum
 import logging
+
+# Load .env for local development (no-op in AWS, where vars come from the
+# Lambda config / Secrets Manager and python-dotenv may not be installed).
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Add ml_training to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'ml_training'))
@@ -70,30 +77,58 @@ REGION_MAPPINGS = {
     'JP': {'platform': 'jp1', 'routing': 'asia'},
 }
 
-# Initialize predictor
-try:
-    # Use S3 if MODELS_BUCKET is specified
-    if MODELS_BUCKET:
-        try:
-            import boto3
-            s3_client = boto3.client('s3', region_name=AWS_REGION)
-            predictor = PerformancePredictor(
-                model_dir='models/',
-                s3_client=s3_client,
-                bucket=MODELS_BUCKET
-            )
-            logger.info(f"Performance predictor loaded from S3 bucket: {MODELS_BUCKET}")
-        except Exception as e:
-            logger.error(f"Failed to load from S3, trying local: {e}")
+# Predictor is loaded lazily on first use (see get_predictor) so that routes
+# which don't need the ML models — like '/' and '/api/coach' — don't pay the
+# model-loading cost on a cold start.
+predictor = None
+_predictor_loaded = False
+
+
+def get_predictor():
+    """Load the performance predictor on first use, then cache it."""
+    global predictor, _predictor_loaded
+    if _predictor_loaded:
+        return predictor
+    _predictor_loaded = True
+    try:
+        if MODELS_BUCKET:
+            try:
+                import boto3
+                s3_client = boto3.client('s3', region_name=AWS_REGION)
+                predictor = PerformancePredictor(
+                    model_dir='models/',
+                    s3_client=s3_client,
+                    bucket=MODELS_BUCKET
+                )
+                logger.info(f"Performance predictor loaded from S3 bucket: {MODELS_BUCKET}")
+            except Exception as e:
+                logger.error(f"Failed to load from S3, trying local: {e}")
+                predictor = PerformancePredictor(model_dir=MODEL_DIR)
+                logger.info("Performance predictor loaded from local storage")
+        else:
             predictor = PerformancePredictor(model_dir=MODEL_DIR)
             logger.info("Performance predictor loaded from local storage")
-    else:
-        # Load from local directory
-        predictor = PerformancePredictor(model_dir=MODEL_DIR)
-        logger.info("Performance predictor loaded from local storage")
-except Exception as e:
-    logger.error(f"Failed to load performance predictor: {e}")
-    predictor = None
+    except Exception as e:
+        logger.error(f"Failed to load performance predictor: {e}")
+        predictor = None
+    return predictor
+
+
+@app.after_request
+def add_cors_headers(response):
+    """Allow the static S3 frontend (different origin) to call the API."""
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
+
+
+@app.route('/api/<path:_>', methods=['OPTIONS'])
+@app.route('/api/player-performance', methods=['OPTIONS'])
+@app.route('/api/coach', methods=['OPTIONS'])
+def cors_preflight(_=None):
+    """Respond to CORS preflight requests (headers added by after_request)."""
+    return ('', 204)
 
 
 @app.route('/')
@@ -147,7 +182,8 @@ def get_player_performance():
             'error': 'Riot API key not configured. Please set RIOT_API_KEY environment variable.'
         }), 500
 
-    if not predictor:
+    active_predictor = get_predictor()
+    if not active_predictor:
         return jsonify({
             'success': False,
             'error': 'Performance predictor not loaded. Please ensure models are trained.'
@@ -234,7 +270,7 @@ def get_player_performance():
                 continue
 
             # Predict performance
-            prediction = predictor.predict_performance(participant, match_data['info'])
+            prediction = active_predictor.predict_performance(participant, match_data['info'])
 
             if prediction:
                 duration_mins = match_data['info']['gameDuration'] // 60
@@ -338,7 +374,9 @@ def coach_query():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-handler = Mangum(app)
+# Flask is a WSGI app; apig-wsgi adapts API Gateway (REST + HTTP API) events to WSGI.
+from apig_wsgi import make_lambda_handler
+handler = make_lambda_handler(app)
 
 if __name__ == '__main__':
     if not RIOT_API_KEY:

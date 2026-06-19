@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-RiftRewind is a League of Legends performance tracker. It uses the Riot API to fetch a player's last 10 ranked matches and scores each game 0–100 using role-specific XGBoost ML models. The backend is a Flask app deployed as an AWS Lambda function (via Mangum). The frontend is either Flask-rendered templates (Jinja2) or a standalone static website that calls API Gateway.
+RiftRewind is a League of Legends performance tracker. It uses the Riot API to fetch a player's last 10 ranked matches and scores each game 0–100 using role-specific XGBoost ML models. The backend is a Flask app deployed as an AWS Lambda **container image** (Flask is WSGI, adapted via `apig-wsgi`). The frontend is either Flask-rendered templates (Jinja2) or a standalone static website that calls API Gateway.
 
 ## Running Locally
 
@@ -61,8 +61,9 @@ python ml_training/test_prediction.py
 ### Key modules
 | File | Role |
 |------|------|
-| `app.py` | Flask app + API routes + Lambda entry point via `Mangum(app)` |
+| `app.py` | Flask app + API routes + Lambda entry point via `apig_wsgi.make_lambda_handler(app)` |
 | `lambda_function.py` | Thin wrapper: calls `handler` from `app.py` |
+| `Dockerfile.lambda` | Container image for the Lambda (deps + app code; models loaded from S3 at runtime) |
 | `ml_training/data_collection.py` | `RiotDataCollector` – fetches and extracts training samples from Riot API |
 | `ml_training/performance_predictor.py` | `PerformancePredictor` – loads `.pkl` models and scores participants |
 | `ml_training/train_models.py` | Trains one `XGBRegressor` per role using computed performance scores |
@@ -91,11 +92,14 @@ At startup, `PerformancePredictor` loads models either from a local `ml_training
 - **Impact metrics** 20% — objectives (turrets, dragons, barons), combat excellence
 
 ### AWS deployment components
-- **Lambda** — `lambda_function.py` → `app.py` (Mangum bridges ASGI/WSGI)
-- **API Gateway** — proxies HTTP requests to Lambda
-- **S3** — stores trained model `.pkl` files and optionally hosts the static frontend
-- **Secrets Manager** — stores `RIOT_API_KEY`
-- **Lambda Layer** — pre-built `lambda-layer/` contains Flask, boto3, scikit-learn, XGBoost, numpy, etc.
+- **Lambda** — container image (`Dockerfile.lambda`); `lambda_function.py` → `app.py`, where `apig-wsgi` adapts the WSGI Flask app to Lambda/API Gateway events. A container image is used because the ML dependencies (numpy + scipy + scikit-learn + xgboost) exceed the 250 MB zip-layer limit.
+- **ECR** — hosts the Lambda container image (`riftrewind-api`).
+- **API Gateway** — REST API with a `{proxy+}` resource forwarding all paths to Lambda; Flask handles routing.
+- **S3** — one bucket stores trained model `.pkl` files (loaded at runtime via `MODELS_BUCKET`), another hosts the static frontend.
+- **CloudFront** — fronts the S3 website for HTTPS and a stable URL.
+- **Secrets Manager** — stores `RIOT_API_KEY` (secret name from `SECRET_NAME`).
+
+Models are **not** baked into the image; they are loaded from S3 at runtime. Model loading is lazy (`get_predictor()`) so routes that don't need the ML models (e.g. `/`, `/api/coach`) avoid the model-load cost on a cold start.
 
 ## Environment Variables
 
