@@ -15,6 +15,14 @@ import argparse
 import os
 from typing import Dict, List
 
+# Load .env so the CLI (python -m coaching.pipeline) picks up RIOT_API_KEY /
+# COHERE_API_KEY without an explicit export, matching app.py.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 import cohere
 
 from . import ddragon

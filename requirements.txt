@@ -1,11 +1,13 @@
 Flask==3.0.0
 requests==2.31.0
-numpy==1.24.3
+numpy==1.26.4
 scikit-learn==1.3.0
 xgboost==2.0.0
 gunicorn==21.2.0
 boto3==1.34.0
-mangum==0.17.0
+apig-wsgi==2.18.0
+
+python-dotenv==1.0.1
 
 # Coaching retrieval layer (Cohere)
 cohere==5.13.3
